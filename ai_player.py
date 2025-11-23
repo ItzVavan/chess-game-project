@@ -27,6 +27,7 @@ class ChessAI:
         beta = math.inf
 
         possible_moves = self._get_all_possible_moves(board, self.color)
+        possible_moves = self._order_moves_basic(board, possible_moves)
 
         if not possible_moves:
             return None
@@ -152,3 +153,19 @@ class ChessAI:
 
     def _get_piece_positional_value(self, piece, row, col):
         return self.piece_values[piece.name]
+
+    def _order_moves_basic(self, board, moves):
+
+        def move_score(move):
+            from_pos, to_pos = move
+            score = 0
+
+            piece = board.get_piece(from_pos)
+            target = board.get_piece(to_pos)
+
+            if target:
+                score += self.piece_values[target.name]
+
+            return score
+
+        return sorted(moves, key=move_score, reverse=True)
