@@ -51,4 +51,32 @@ class Board:
     def is_valid_pos(self, pos):
         row, col = pos
         return 0 <= row < 8 and 0 <= col < 8
-    
+    def move_piece(self, from_pos, to_pos):
+        piece = self.get_piece(from_pos)
+        from_row, from_col = from_pos
+        to_row, to_col = to_pos
+        
+
+        if piece.name == 'King' and abs(to_col - from_col) == 2:
+            self.set_piece(to_pos, piece)
+            self.set_piece(from_pos, None)
+            piece.pos = to_pos
+            piece.has_moved = True
+            
+            if to_col > from_col:
+                rook = self.get_piece((from_row, 7))
+                self.set_piece((from_row, 5), rook)
+                self.set_piece((from_row, 7), None)
+                rook.pos = (from_row, 5)
+                rook.has_moved = True
+            else:
+                rook = self.get_piece((from_row, 0))
+                self.set_piece((from_row, 3), rook)
+                self.set_piece((from_row, 0), None)
+                rook.pos = (from_row, 3)
+                rook.has_moved = True
+        else:
+            self.set_piece(to_pos, piece)
+            self.set_piece(from_pos, None)
+            piece.pos = to_pos
+            piece.has_moved = True
