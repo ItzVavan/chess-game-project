@@ -21,6 +21,9 @@ class ChessAI:
 
 
     def get_best_move(self, board):
+        self.nodes_evaluated = 0
+        self.transposition_table.clear()
+
         best_move = None
         best_value = -math.inf
         alpha = -math.inf
@@ -60,6 +63,7 @@ class ChessAI:
 
             alpha = max(alpha, value)
 
+        print(f"AI: оценено {self.nodes_evaluated} позиций, лучшая оценка: {best_value}")
         return best_move
 
     def _minimax_alpha_beta(self, board, depth, alpha, beta, is_maximizing):
