@@ -80,3 +80,43 @@ class Board:
             self.set_piece(from_pos, None)
             piece.pos = to_pos
             piece.has_moved = True
+    def is_check(self, color):
+        king_pos = self.white_king_pos if color == 'white' else self.black_king_pos
+        if not king_pos:
+            return False
+        opponent_color = 'black' if color == 'white' else 'white'
+        for row in range(8):
+            for col in range(8):
+                piece = self.board[row][col]
+                if piece and piece.color == opponent_color:
+                    if piece.name == 'King':
+                        if abs(row - king_pos[0]) <= 1 and abs(col - king_pos[1]) <= 1:
+                            return True
+                    else:
+                        if king_pos in piece.get_valid_moves(self):
+                            return True
+        return False
+    
+    def is_checkmate(self, color):
+        if not self.is_check(color):
+            return False
+        for row in range(8):
+            for col in range(8):
+                piece = self.board[row][col]
+                if piece and piece.color == color:
+                    for move in piece.get_valid_moves(self):
+                        if self.is_legal_move((row, col), move, color):
+                            return False
+        return True
+    
+    def is_stalemate(self, color):
+        if self.is_check(color):
+            return False
+        for row in range(8):
+            for col in range(8):
+                piece = self.board[row][col]
+                if piece and piece.color == color:
+                    for move in piece.get_valid_moves(self):
+                        if self.is_legal_move((row, col), move, color):
+                            return False
+        return True
