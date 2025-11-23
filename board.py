@@ -120,3 +120,57 @@ class Board:
                         if self.is_legal_move((row, col), move, color):
                             return False
         return True
+    def is_legal_move(self, from_pos, to_pos, color):
+        piece = self.get_piece(from_pos)
+        captured = self.get_piece(to_pos)
+        old_pos = piece.pos
+        
+        from_row, from_col = from_pos
+        to_row, to_col = to_pos
+        
+
+        is_castling = piece.name == 'King' and abs(to_col - from_col) == 2
+        
+        if is_castling:
+
+            direction = 1 if to_col > from_col else -1
+            
+
+            if self.is_check(color):
+                return False
+            
+
+            for step in range(1, 3):
+                intermediate_col = from_col + step * direction
+                self.set_piece((from_row, intermediate_col), piece)
+                self.set_piece(from_pos if step == 1 else (from_row, from_col + (step-1)*direction), None)
+                piece.pos = (from_row, intermediate_col)
+                
+                if self.is_check(color):
+                    # Откатываем
+                    self.set_piece(from_pos, piece)
+                    for c in range(min(from_col, to_col), max(from_col, to_col) + 1):
+                        if c != from_col:
+                            self.set_piece((from_row, c), None)
+                    piece.pos = old_pos
+                    return False
+            
+
+            self.set_piece(from_pos, piece)
+            self.set_piece(to_pos, None)
+            piece.pos = old_pos
+            return True
+        
+
+        self.set_piece(to_pos, piece)
+        self.set_piece(from_pos, None)
+        piece.pos = to_pos
+        
+        in_check = self.is_check(color)
+        
+        self.set_piece(from_pos, piece)
+        self.set_piece(to_pos, captured)
+        piece.pos = old_pos
+        
+        return not in_check
+
